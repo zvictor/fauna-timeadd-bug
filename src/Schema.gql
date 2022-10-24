@@ -22,6 +22,5 @@ type CrawlingQuery {
 type Query {
   allCrawlingQueries: [CrawlingQuery!]
   nextCrawlingQueries(indexName: String!): [CrawlingQuery]! @resolver(name: "nextCrawlingQueries", paginated: true)
-  nextCrawlingQueries_hardcoded: [CrawlingQuery]! @resolver(name: "nextCrawlingQueries_hardcoded", paginated: true)
 }
 
