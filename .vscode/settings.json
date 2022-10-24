@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.udf": "fql",
+        "*.role": "fql",
+        "*.index": "fql"
+    }
+}

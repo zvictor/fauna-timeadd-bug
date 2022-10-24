@@ -1,0 +1,27 @@
+enum TimeUnit {
+  days
+  hours
+  minutes
+  seconds
+  milliseconds
+  microseconds
+  nanoseconds
+}
+
+type SchedulingParameters @embedded {
+  amount: Float!
+  unit: TimeUnit!
+}
+
+type CrawlingQuery {
+  keyword: String!
+  schedule: SchedulingParameters!
+  executions: [Time]
+}
+
+type Query {
+  allCrawlingQueries: [CrawlingQuery!]
+  nextCrawlingQueries(indexName: String!): [CrawlingQuery]! @resolver(name: "nextCrawlingQueries", paginated: true)
+  nextCrawlingQueries_hardcoded: [CrawlingQuery]! @resolver(name: "nextCrawlingQueries_hardcoded", paginated: true)
+}
+
