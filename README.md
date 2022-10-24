@@ -1,15 +1,20 @@
 # Steps to reproduce
 
+1. Run the commands below:
 ```bash
 npm i
 export FAUNA_SECRET=<secret-of-a-new-db>
 npx brainyduck --no-watch dev
 ts-node src/index.ts
 ```
+2. Read the output of the last command.
+3. Check the indexes `by_expiry` and `by_expiry_hardcoded` on fauna's dashboard. They should both have a date as first value, but `by_expiry` has `null` instead.
 
-Please note that you can add `--overwrite` to the brainyduck command in order to "reset" fauna.
+**Tips to debug the code:**
 
-Removing the `--no-watch` option is also helpful while debugging.
+* You can add `--overwrite` to the brainyduck commands in order to "reset" fauna.
+
+* Removing the `--no-watch` option is also helpful while debugging to speed up interactions.
 
 # Expected output
 
