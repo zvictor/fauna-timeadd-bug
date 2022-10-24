@@ -26,7 +26,7 @@ Notice that `by_expiry` and `by_expiry_hardcoded` were supposed to have returned
 ========== TESTING INDEX 'by_expiry' ==========
 
 If the code works as it should, you will see a collection with keywords A and B.
-But if you see and empty array, the code is not working as it should!
+But if you see an empty array, the code is not working as it should!
 
 by_expiry: []
 
@@ -34,7 +34,7 @@ by_expiry: []
 ========== TESTING INDEX 'by_expiry_hardcoded' ==========
 
 If the code works as it should, you will see a collection with keywords A and B.
-But if you see and empty array, the code is not working as it should!
+But if you see an empty array, the code is not working as it should!
 
 by_expiry_hardcoded: [
   {

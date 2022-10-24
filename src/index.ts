@@ -7,7 +7,7 @@ const testIndex = async (indexName: string) => {
 
     console.log(`\n\n========== TESTING INDEX '${indexName}' ==========\n`);
     console.log(`If the code works as it should, you will see a collection with keywords A and B.`);
-    console.log(`But if you see and empty array, the code is not working as it should!\n`);
+    console.log(`But if you see an empty array, the code is not working as it should!\n`);
     console.log(`${indexName}:`, nextQueries.data);
 }
 
