@@ -8,7 +8,7 @@ npx brainyduck --no-watch dev
 ts-node src/index.ts
 ```
 2. Read the output of the last command.
-3. Check the indexes `by_expiry` and `by_expiry_hardcoded` on fauna's dashboard. They should both have a date as first value, but `by_expiry` has `null` instead.
+3. Check the indexes `by_expiry` and `by_expiry_hardcoded` on fauna's dashboard. They should both have a `Time` as first value, but `by_expiry` has `null` instead.
 
 **Tips to debug the code:**
 
