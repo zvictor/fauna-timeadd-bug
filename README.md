@@ -2,7 +2,7 @@ Note: for a better experience, there is also an [alternative reproducible using 
 # Steps to reproduce
 
 1. Run the commands below to set everything up (**Remember to replace `<YOUR_FAUNA_SECRET_HERE>` inside `curl`!**):
-```haskell
+```
 npx fauna-shell upload-graphql-schema Schema.gql
 
 npx fauna-shell eval --file=shell.fql
