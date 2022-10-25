@@ -1,3 +1,4 @@
+Note: for a better experience, there is also an [alternative reproducible using brainyduck](https://github.com/zvictor/fauna-timeadd-bug/tree/main).
 # Steps to reproduce
 
 1. Run the commands below to set everything up (**Remember to replace `<YOUR_FAUNA_SECRET_HERE>` inside `curl`!**):
