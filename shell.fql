@@ -1,0 +1,44 @@
+CreateIndex({
+  name: "by_expiry",
+  source: {
+    collection: Collection("CrawlingQuery"),
+    fields: {
+      expiry: Query(
+        Lambda(
+          "document",
+          TimeAdd(
+            Select(["data", "executions", 0], Var("document"), Epoch(0, 'second')),
+            Select(["data", "schedule", "amount"], Var("document")), 
+            Select(["data", "schedule", "unit"], Var("document")),
+          )
+        )
+      ),
+    },
+  },
+  values: [
+    { binding: 'expiry' },
+    { field: ["ref"] },
+  ]
+})
+
+Create(Collection("CrawlingQuery"), {
+  data: {
+    keyword: "A-shell",
+    schedule: { amount: 24, unit: "hours" }
+  }
+})
+
+Create(Collection("CrawlingQuery"), {
+  data: {
+    keyword: "B-shell",
+    schedule: { amount: 24, unit: "days" }
+  }
+})
+
+Create(Collection("CrawlingQuery"), {
+  data: {
+    keyword: "C-shell",
+    schedule: { amount: 24, unit: "minutes" },
+    executions: [Now()]
+  }
+})

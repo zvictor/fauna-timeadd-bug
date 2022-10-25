@@ -1,55 +1,89 @@
 # Steps to reproduce
 
-1. Run the commands below:
-```bash
-npm i
-export FAUNA_SECRET=<secret-of-a-new-db>
-npx brainyduck --no-watch dev
-ts-node src/index.ts
-```
-2. Read the output of the last command.
-3. Check the indexes `by_expiry` and `by_expiry_hardcoded` on fauna's dashboard. They should both have a `Time` as first value, but `by_expiry` has `null` instead.
-
-**Tips to debug the code:**
-
-* You can add `--overwrite` to the brainyduck commands in order to "reset" fauna.
-
-* Removing the `--no-watch` option is also helpful while debugging to speed up interactions.
-
-# Expected output
-
-The snippet below is the output I get when running the steps on my machine.
-
-Notice that `by_expiry` and `by_expiry_hardcoded` were supposed to have returned the same values, but they didn't.
-
+1. Run the commands below to set everything up (**Remember to replace `<YOUR_FAUNA_SECRET_HERE>` inside `curl`!**):
 ```haskell
-========== TESTING INDEX 'by_expiry' ==========
+npx fauna-shell upload-graphql-schema Schema.gql
 
-If the code works as it should, you will see a collection with keywords A and B.
-But if you see an empty array, the code is not working as it should!
+npx fauna-shell eval --file=shell.fql
 
-by_expiry: []
+curl 'https://graphql.fauna.com/graphql' \
+  -H 'authority: graphql.fauna.com' \
+  -H 'authorization: Basic <YOUR_FAUNA_SECRET_HERE>' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  --data-raw '{"operationName":null,"variables":{},"query":"mutation {\n  A: createCrawlingQuery(\n    data: {keyword: \"A-graphql\", schedule: {amount: 24, unit: hours}}\n  ) {\n    _id\n  }\n  B: createCrawlingQuery(data: {keyword: \"B-graphql\", schedule: {amount: 24, unit: days}}) {\n    _id\n  }\n  C: createCrawlingQuery(\n    data: {keyword: \"C-graphql\", schedule: {amount: 24, unit: minutes}, executions: [\"2022-10-25T10:50:22.937Z\"]}\n  ) {\n    _id\n  }\n}\n"}'
+```
+2. Run the code below in the shell and notice that only the 3 first results contain `Time` as result, the rest have `null`. **The correct would be for all entries to have a `Time` instead of `null`**.
+```haskell
+> Paginate(Match(Index("by_expiry")))
 
+{
+  data: [
+    [
+      Time("1970-01-02T00:00:00Z"),
+      Ref(Collection("CrawlingQuery"), "346488475199996497")
+    ],
+    [
+      Time("1970-01-25T00:00:00Z"),
+      Ref(Collection("CrawlingQuery"), "346488475469480529")
+    ],
+    [
+      Time("2022-10-25T11:30:50.134803Z"),
+      Ref(Collection("CrawlingQuery"), "346488475705410129")
+    ],
+    [ null, Ref(Collection("CrawlingQuery"), "346488604317450825") ],
+    [ null, Ref(Collection("CrawlingQuery"), "346488604336325193") ],
+    [ null, Ref(Collection("CrawlingQuery"), "346488604336326217") ]
+  ]
+}
+```
+3. To make sure we created the data correctly, run the code below in the shell. You will notice how all documents have the same data types and same structure.
+```haskell
+> Map(
+  Paginate(Documents(Collection('CrawlingQuery'))),
+  Lambda('ref', Get(Var('ref')))
+)
 
-========== TESTING INDEX 'by_expiry_hardcoded' ==========
-
-If the code works as it should, you will see a collection with keywords A and B.
-But if you see an empty array, the code is not working as it should!
-
-by_expiry_hardcoded: [
-  {
-    executions: [],
-    _id: '346435617686553163',
-    keyword: 'A',
-    schedule: { amount: 24, unit: 'hours' },
-    _ts: 1666645600880000
-  },
-  {
-    executions: [],
-    _id: '346435618099692107',
-    keyword: 'B',
-    schedule: { amount: 24, unit: 'days' },
-    _ts: 1666645601275000
-  }
-]
+{
+  data: [
+    {
+      ref: Ref(Collection("CrawlingQuery"), "346488475199996497"),
+      ts: 1666696009750000,
+      data: { keyword: 'A-shell', schedule: { amount: 24, unit: 'hours' } }
+    },
+    {
+      ref: Ref(Collection("CrawlingQuery"), "346488475469480529"),
+      ts: 1666696009990000,
+      data: { keyword: 'B-shell', schedule: { amount: 24, unit: 'days' } }
+    },
+    {
+      ref: Ref(Collection("CrawlingQuery"), "346488475705410129"),
+      ts: 1666696010212000,
+      data: {
+        keyword: 'C-shell',
+        schedule: { amount: 24, unit: 'minutes' },
+        executions: [ Time("2022-10-25T11:06:50.134803Z") ]
+      }
+    },
+    {
+      ref: Ref(Collection("CrawlingQuery"), "346488604317450825"),
+      ts: 1666696132880000,
+      data: {
+        keyword: 'C-graphql',
+        schedule: { amount: 24, unit: 'minutes' },
+        executions: [ Time("2022-10-25T10:50:22.937Z") ]
+      }
+    },
+    {
+      ref: Ref(Collection("CrawlingQuery"), "346488604336325193"),
+      ts: 1666696132880000,
+      data: { keyword: 'A-graphql', schedule: { amount: 24, unit: 'hours' } }
+    },
+    {
+      ref: Ref(Collection("CrawlingQuery"), "346488604336326217"),
+      ts: 1666696132880000,
+      data: { keyword: 'B-graphql', schedule: { amount: 24, unit: 'days' } }
+    }
+  ]
+}
 ```
